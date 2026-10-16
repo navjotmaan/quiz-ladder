@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { LEVELS, PASS, SECONDS, TOPICS, type Feedback, type Question, type RoundResult } from "@/lib/game";
-import { finishRound, nextQuestion, startRound, submitAnswer } from "@/lib/quiz";
+import { finishRound, nextQuestion, startRound, submitAnswer } from "@/lib/quiz-actions";
 
 const primaryBtn = "cursor-pointer rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-3 font-bold text-white shadow-lg shadow-fuchsia-950/30 transition motion-reduce:transition-none hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-fuchsia-300 disabled:opacity-60";
 const ghostBtn = "cursor-pointer rounded-xl px-4 py-3 font-semibold text-slate-300 transition motion-reduce:transition-none hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300";
