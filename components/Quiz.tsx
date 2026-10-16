@@ -13,8 +13,8 @@ const Shell = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
-export default function Quiz({ topic }: { topic: string }) {
-  const [li, setLi] = useState(0);
+export default function Quiz({ topic, startLevel }: { topic: string; startLevel: number }) {
+  const [li, setLi] = useState(startLevel);
   const [attemptId, setAttemptId] = useState<string | null>(null);
   const [question, setQuestion] = useState<Question | null>(null);
   const [picked, setPicked] = useState<number | null>(null); // -1 = timed out
@@ -40,7 +40,7 @@ export default function Quiz({ topic }: { topic: string }) {
   useEffect(() => {
     if (started.current) return; // stops React dev mode from starting two rounds
     started.current = true;
-    start(0);
+    start(startLevel);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function submit(choice: number | null) {

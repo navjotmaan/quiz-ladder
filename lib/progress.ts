@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { today } from '@/lib/game'
+import { LEVELS, today } from '@/lib/game'
 
 export async function getProgress() {
   const supabase = await createClient()
@@ -28,4 +28,20 @@ export async function getProgress() {
     longest: p?.longest_streak ?? 0,
     byTopic: Object.fromEntries((days ?? []).map((d) => [d.topic_id, d])), // today's progress per topic
   }
+}
+
+/** The first level not yet cleared today for this topic (0 = beginner). */
+export async function getStartLevel(topic: string): Promise<number> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return 0
+
+  const { data } = await supabase.from('daily_scores')
+    .select('levels_cleared')
+    .eq('user_id', user.id).eq('topic_id', topic).eq('play_date', today())
+    .maybeSingle()
+
+  const cleared: string[] = data?.levels_cleared ?? []
+  const next = LEVELS.findIndex((l) => !cleared.includes(l))
+  return next === -1 ? 0 : next // all three cleared: start over from beginner
 }
