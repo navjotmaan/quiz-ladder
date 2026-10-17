@@ -77,7 +77,7 @@ export default function Quiz({ topic, startLevel }: { topic: string; startLevel:
       <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-5 text-slate-300">
         <p className="mb-4">Something went wrong.</p>
         <button onClick={() => start(li)} className={primaryBtn}>Restart this level</button>
-        <Link href="/" className={`${ghostBtn} ml-2 inline-block`}>Back home</Link>
+        <Link href="/dashboard" prefetch={false} className={`${ghostBtn} ml-2 inline-block`}>Back home</Link>
       </div>
     </Shell>
   );
@@ -97,7 +97,7 @@ export default function Quiz({ topic, startLevel }: { topic: string; startLevel:
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             {res.passed && !last && <button onClick={() => start(li + 1)} disabled={busy} className={primaryBtn}>Start {LEVELS[li + 1]}</button>}
             {!res.passed && <button onClick={() => start(li)} disabled={busy} className={primaryBtn}>Retry with new questions</button>}
-            <Link href="/" className={ghostBtn}>{res.passed && last ? "Pick another topic" : "Back home"}</Link>
+            <Link href="/dashboard" prefetch={false} className={ghostBtn}>{res.passed && last ? "Pick another topic" : "Back home"}</Link>
           </div>
         </div>
       </Shell>
@@ -116,7 +116,7 @@ export default function Quiz({ topic, startLevel }: { topic: string; startLevel:
   return (
     <Shell>
       <header className="mb-5 flex items-center justify-between gap-3 rounded-2xl border border-slate-700/70 bg-slate-900/70 px-4 py-3 backdrop-blur">
-        <Link href="/" className="grid size-10 shrink-0 place-items-center rounded-xl text-xl text-slate-300 transition motion-reduce:transition-none hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300" aria-label="Back home">←</Link>
+        <Link href="/dashboard" prefetch={false} className="grid size-10 shrink-0 place-items-center rounded-xl text-xl text-slate-300 transition motion-reduce:transition-none hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300" aria-label="Back home">←</Link>
         <span className="truncate text-sm font-medium text-slate-200 sm:text-base">{t.icon} {t.name} <span className="text-slate-500">·</span> <b className="text-cyan-200">{level}</b></span>
         <span className="shrink-0 rounded-lg bg-slate-800 px-2.5 py-1 text-sm font-bold tabular-nums text-slate-300">{question.position + 1}<span className="text-slate-500">/5</span></span>
       </header>
@@ -130,11 +130,14 @@ export default function Quiz({ topic, startLevel }: { topic: string; startLevel:
             className={`w-full cursor-pointer rounded-xl border px-4 py-4 text-left text-base font-medium transition duration-150 motion-reduce:transition-none disabled:cursor-default sm:px-5 ${optionClass(k)}`}>{o}</button>
         ))}
       </div>
+
+      {answered && !feedback && <p className="mt-5 text-sm text-slate-400">Checking…</p>}
+      
       {feedback && (
         <div className={`mt-5 grid gap-3 rounded-2xl border p-5 ${feedback.isCorrect ? "border-emerald-300/30 bg-emerald-300/5" : "border-amber-300/30 bg-amber-300/5"}`}>
           <strong className={feedback.isCorrect ? "text-emerald-200" : "text-amber-200"}>{feedback.isCorrect ? "Correct!" : feedback.timedOut ? "Time's up" : "Not quite"}</strong>
           <p className="m-0 leading-7 text-slate-300">{feedback.explanation}</p>
-          <button onClick={next} disabled={busy} className={`${primaryBtn} justify-self-start`}>{question.position < 4 ? "Next question" : "See result"}</button>
+          <button onClick={next} disabled={busy} className={`${primaryBtn} justify-self-start`}>{busy ? "Loading…" : question.position < 4 ? "Next question" : "See result"}</button>
         </div>
       )}
     </Shell>

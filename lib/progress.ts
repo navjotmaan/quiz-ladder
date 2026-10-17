@@ -3,16 +3,18 @@ import { LEVELS, today } from '@/lib/game'
 
 export async function getProgress() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
+
+  const { data: auth } = await supabase.auth.getClaims()
+  const userId = auth?.claims?.sub
+  if (!userId) return null   
 
   const [{ data: p }, { data: days }] = await Promise.all([
     supabase.from('profiles')
       .select('display_name, current_streak, longest_streak, last_streak_date, streak_freezes')
-      .eq('id', user.id).single(),
+      .eq('id', userId).single(),
     supabase.from('daily_scores')
       .select('topic_id, points, questions_answered, levels_cleared')
-      .eq('user_id', user.id).eq('play_date', today()),
+      .eq('user_id', userId).eq('play_date', today()),
   ])
 
   // Same rule as the old liveStreak(): the streak survives a 1-day gap, or a 2-day gap with a freeze
@@ -33,12 +35,14 @@ export async function getProgress() {
 /** The first level not yet cleared today for this topic (0 = beginner). */
 export async function getStartLevel(topic: string): Promise<number> {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return 0
+
+  const { data: auth } = await supabase.auth.getClaims()
+  const userId = auth?.claims?.sub
+  if (!userId) return 0   
 
   const { data } = await supabase.from('daily_scores')
     .select('levels_cleared')
-    .eq('user_id', user.id).eq('topic_id', topic).eq('play_date', today())
+    .eq('user_id', userId).eq('topic_id', topic).eq('play_date', today())
     .maybeSingle()
 
   const cleared: string[] = data?.levels_cleared ?? []

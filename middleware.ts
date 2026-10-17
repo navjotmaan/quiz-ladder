@@ -20,8 +20,8 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Verifies the session with Supabase and refreshes the cookie if needed
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data } = await supabase.auth.getClaims()
+  const user = data?.claims ?? null
   const path = request.nextUrl.pathname
 
   const redirectTo = (to: string) => {
